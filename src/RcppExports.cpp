@@ -6,55 +6,53 @@
 
 using namespace Rcpp;
 
-// rcpparma_hello_world
-arma::mat rcpparma_hello_world();
-RcppExport SEXP _SSOSVM_rcpparma_hello_world() {
+// SquareHingeC
+Rcpp::List SquareHingeC(arma::mat& YMAT, int DIM, double EPSILON, bool returnAll);
+RcppExport SEXP _SSOSVM_SquareHingeC(SEXP YMATSEXP, SEXP DIMSEXP, SEXP EPSILONSEXP, SEXP returnAllSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpparma_hello_world());
+    Rcpp::traits::input_parameter< arma::mat& >::type YMAT(YMATSEXP);
+    Rcpp::traits::input_parameter< int >::type DIM(DIMSEXP);
+    Rcpp::traits::input_parameter< double >::type EPSILON(EPSILONSEXP);
+    Rcpp::traits::input_parameter< bool >::type returnAll(returnAllSEXP);
+    rcpp_result_gen = Rcpp::wrap(SquareHingeC(YMAT, DIM, EPSILON, returnAll));
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpparma_outerproduct
-arma::mat rcpparma_outerproduct(const arma::colvec& x);
-RcppExport SEXP _SSOSVM_rcpparma_outerproduct(SEXP xSEXP) {
+// HingeC
+Rcpp::List HingeC(arma::mat& YMAT, int DIM, double EPSILON, bool returnAll);
+RcppExport SEXP _SSOSVM_HingeC(SEXP YMATSEXP, SEXP DIMSEXP, SEXP EPSILONSEXP, SEXP returnAllSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpparma_outerproduct(x));
+    Rcpp::traits::input_parameter< arma::mat& >::type YMAT(YMATSEXP);
+    Rcpp::traits::input_parameter< int >::type DIM(DIMSEXP);
+    Rcpp::traits::input_parameter< double >::type EPSILON(EPSILONSEXP);
+    Rcpp::traits::input_parameter< bool >::type returnAll(returnAllSEXP);
+    rcpp_result_gen = Rcpp::wrap(HingeC(YMAT, DIM, EPSILON, returnAll));
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpparma_innerproduct
-double rcpparma_innerproduct(const arma::colvec& x);
-RcppExport SEXP _SSOSVM_rcpparma_innerproduct(SEXP xSEXP) {
+// LogisticC
+Rcpp::List LogisticC(arma::mat& YMAT, int DIM, double EPSILON, bool returnAll);
+RcppExport SEXP _SSOSVM_LogisticC(SEXP YMATSEXP, SEXP DIMSEXP, SEXP EPSILONSEXP, SEXP returnAllSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpparma_innerproduct(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rcpparma_bothproducts
-Rcpp::List rcpparma_bothproducts(const arma::colvec& x);
-RcppExport SEXP _SSOSVM_rcpparma_bothproducts(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpparma_bothproducts(x));
+    Rcpp::traits::input_parameter< arma::mat& >::type YMAT(YMATSEXP);
+    Rcpp::traits::input_parameter< int >::type DIM(DIMSEXP);
+    Rcpp::traits::input_parameter< double >::type EPSILON(EPSILONSEXP);
+    Rcpp::traits::input_parameter< bool >::type returnAll(returnAllSEXP);
+    rcpp_result_gen = Rcpp::wrap(LogisticC(YMAT, DIM, EPSILON, returnAll));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_SSOSVM_rcpparma_hello_world", (DL_FUNC) &_SSOSVM_rcpparma_hello_world, 0},
-    {"_SSOSVM_rcpparma_outerproduct", (DL_FUNC) &_SSOSVM_rcpparma_outerproduct, 1},
-    {"_SSOSVM_rcpparma_innerproduct", (DL_FUNC) &_SSOSVM_rcpparma_innerproduct, 1},
-    {"_SSOSVM_rcpparma_bothproducts", (DL_FUNC) &_SSOSVM_rcpparma_bothproducts, 1},
+    {"_SSOSVM_SquareHingeC", (DL_FUNC) &_SSOSVM_SquareHingeC, 4},
+    {"_SSOSVM_HingeC", (DL_FUNC) &_SSOSVM_HingeC, 4},
+    {"_SSOSVM_LogisticC", (DL_FUNC) &_SSOSVM_LogisticC, 4},
     {NULL, NULL, 0}
 };
 

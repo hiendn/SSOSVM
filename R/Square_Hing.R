@@ -21,11 +21,11 @@ SquareHinge<-function(YMAT,DIM=2, EPSILON = 10^-5, returnAll = F, verbose=F){
   THETA_OLD <- THETA
 
   # Initialize little psi vector
-  psi <- (sqrt((1-sum(THETA*YMAT[1,]))^2+EPSILON)+1-sum(THETA*YMAT[1,]))^2/
-          (2*sqrt((1-sum(THETA*YMAT[1,]))^2+EPSILON))
-
+  psi <- (sqrt((1-sum(THETA*YMAT[1,]))^2+EPSILON)+1-sum(THETA*YMAT[1,]))^2/(2*sqrt((1-sum(THETA*YMAT[1,]))^2+EPSILON))
+ 
+                                                                              
   if(returnAll){
-    THETA_list<-list(rep(THETA,NN))
+    THETA_list<-array(0,c(NN,DIM+1))
   }else{
     THETA_list<-NA
   }
@@ -44,17 +44,20 @@ SquareHinge<-function(YMAT,DIM=2, EPSILON = 10^-5, returnAll = F, verbose=F){
     # Update Theta
     THETA <- MASS::ginv(t(YMAT[1:ii,])%*%YMAT[1:ii,]+LAMBDA*NN*IBAR)%*%
               t(YMAT[1:ii,])%*%(YMAT[1:ii,]%*%THETA_OLD+0.5*psi_mat)
+    
+    
 
     if(verbose){
       message(paste(ii,THETA))
     }
 
     if(returnAll){
-      THETA_list[[ii]]<-THETA
+      THETA_list[ii,]<-THETA
     }
 
-    return(list(THETA=THETA, NN=NN, DIM=DIM, THETA_list=THETA_list))
+    
   }
+  return(list(THETA=THETA, NN=NN, DIM=DIM, THETA_list=THETA_list))
 
 }
 
@@ -70,7 +73,7 @@ Hinge<-function(YMAT,DIM=2, EPSILON = 10^-5, returnAll = F, verbose=F){
 
 
   if(returnAll){
-    THETA_list<-list(rep(THETA,NN))
+    THETA_list<-array(0,c(NN,DIM+1))
   }else{
     THETA_list<-NA
   }
@@ -98,7 +101,7 @@ Hinge<-function(YMAT,DIM=2, EPSILON = 10^-5, returnAll = F, verbose=F){
       }
 
       if(returnAll){
-        THETA_list[[ii]]<-THETA
+        THETA_list[ii,]<-THETA
       }
     }
 
@@ -119,7 +122,7 @@ Logistic<-function(YMAT,DIM=2, EPSILON = 10^-5, returnAll = F, verbose=F){
 
 
   if(returnAll){
-    THETA_list<-list(rep(THETA,NN))
+    THETA_list<-array(0,c(NN,DIM+1))
   }else{
     THETA_list<-NA
   }
@@ -148,7 +151,7 @@ Logistic<-function(YMAT,DIM=2, EPSILON = 10^-5, returnAll = F, verbose=F){
     }
 
     if(returnAll){
-      THETA_list[[ii]]<-THETA
+      THETA_list[ii,]<-THETA
     }
   }
 
@@ -159,10 +162,7 @@ Logistic<-function(YMAT,DIM=2, EPSILON = 10^-5, returnAll = F, verbose=F){
 
 
 # # Initialization (YMAT is BIG_Y_BAR in text)
-# YMAT <- generateSim()
-# sq1<-SquareHinge(YMAT$YMAT)
-# h1<-Hinge(YMAT$YMAT)
-# l1<-Logistic(YMAT$YMAT)
+
 # 
 # # Plots only make sense for 2D XX
 # plot(YMAT$XX,pch=(YMAT$YY+2),col=heat.colors(sq1$NN)[1:sq1$NN])
