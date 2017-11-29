@@ -89,7 +89,8 @@ Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001,
       Rcpp::Named("THETA")= export_vec(THETA),
       Rcpp::Named("NN")= NN,
       Rcpp::Named("DIM")= DIM,
-      Rcpp::Named("THETA_list")= THETA_list
+      Rcpp::Named("THETA_list")= THETA_list,
+      Rcpp::Named("PSI")=export_vec(psi)
   );
   
   
@@ -150,7 +151,8 @@ Rcpp::List HingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool 
     Rcpp::Named("THETA")= export_vec(THETA),
     Rcpp::Named("NN")= NN,
     Rcpp::Named("DIM")= DIM,
-    Rcpp::Named("THETA_list")= THETA_list
+    Rcpp::Named("THETA_list")= THETA_list,
+    Rcpp::Named("OMEGA")=export_vec(omega)
   );
   
   
@@ -209,7 +211,8 @@ Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, boo
     Rcpp::Named("THETA")= export_vec(THETA),
     Rcpp::Named("NN")= NN,
     Rcpp::Named("DIM")= DIM,
-    Rcpp::Named("THETA_list")= THETA_list
+    Rcpp::Named("THETA_list")= THETA_list,
+    Rcpp::Named("CHI")= export_vec(chi)
   );
   
   
