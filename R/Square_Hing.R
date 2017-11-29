@@ -160,15 +160,32 @@ Logistic<-function(YMAT,DIM=2, EPSILON = 10^-5, returnAll = F, verbose=F){
 }
 
 
+# helper function for visualization
+show_digit = function(arr784, col = gray(12:1 / 12), ...) {
+  image(matrix(as.matrix(arr784[-785]), nrow = 28)[, 28:1], col = col, ...)
+}
 
-# # Initialization (YMAT is BIG_Y_BAR in text)
+# load image files
+load_image_file = function(filename) {
+  ret = list()
+  f = file(filename, 'rb')
+  readBin(f, 'integer', n = 1, size = 4, endian = 'big')
+  n    = readBin(f, 'integer', n = 1, size = 4, endian = 'big')
+  nrow = readBin(f, 'integer', n = 1, size = 4, endian = 'big')
+  ncol = readBin(f, 'integer', n = 1, size = 4, endian = 'big')
+  x = readBin(f, 'integer', n = n * nrow * ncol, size = 1, signed = FALSE)
+  close(f)
+  data.frame(matrix(x, ncol = nrow * ncol, byrow = TRUE))
+}
 
-# 
-# # Plots only make sense for 2D XX
-# plot(YMAT$XX,pch=(YMAT$YY+2),col=heat.colors(sq1$NN)[1:sq1$NN])
-# curve(-sq1$THETA[1]/sq1$THETA[3]-sq1$THETA[2]/sq1$THETA[3]*x,from=min(YMAT$XX),to=max(YMAT$XX),col='black',add=T)
-# curve(-h1$THETA[1]/h1$THETA[3]-h1$THETA[2]/h1$THETA[3]*x,from=min(YMAT$XX),to=max(YMAT$XX),col='blue',add=T)
-# curve(-l1$THETA[1]/sq1$THETA[3]-l1$THETA[2]/l1$THETA[3]*x,from=min(YMAT$XX),to=max(YMAT$XX),col='green',add=T)
-# 
+# load label files
+load_label_file = function(filename) {
+  f = file(filename, 'rb')
+  readBin(f, 'integer', n = 1, size = 4, endian = 'big')
+  n = readBin(f, 'integer', n = 1, size = 4, endian = 'big')
+  y = readBin(f, 'integer', n = n, size = 1, signed = FALSE)
+  close(f)
+  y
+}
 
 

@@ -70,8 +70,8 @@ YY<-2.0*((trainlab==k)-.5)
 YY2<-2.0*((testlab==k)-.5)
 
 pca1<-princomp(train)
-B=5
-M=60000
+B=2
+M=6000
 
 set<-1:M
 #set<-sample(c(which(trainlab==1), sample(which(trainlab!=1), length(which(trainlab==1)))))
@@ -89,10 +89,15 @@ xl<- -2*(((rowSums(t(apply(test1, 1 , `*` , -l2$THETA[-(1)] ))) > l2$THETA[(1)])
 xsq<- -2*(((rowSums(t(apply(test1, 1 , `*` , -sq2$THETA[-(1)] ))) > sq2$THETA[(1)]))-.5)
 xh<- -2*(((rowSums(t(apply(test1, 1 , `*` , -h2$THETA[-(1)] ))) > h2$THETA[(1)]))-.5)
 
+
+xl<- sign(rowSums(t(apply(test1, 1 , `*` , -l2$THETA[-(1)] )))) 
+xsq<- sign(rowSums(t(apply(test1, 1 , `*` , -sq2$THETA[-(1)] )))) 
+xh<- sign(rowSums(t(apply(test1, 1 , `*` , -h2$THETA[-(1)] )))) 
+
 if(B==2){
-  plot(trainpc, pch=(YY[set]+2), ylim=c(min(trainpc[,2]),max(trainpc[,2])), xlim=c(min(trainpc[,1]),max(trainpc[,1])), xlab="X1",ylab="X2")
-  curve(-sq2$THETA[1]/sq2$THETA[(B+1)]-sq2$THETA[2]/sq2$THETA[(B+1)]*x, col='black',add=T)
-  curve(-h2$THETA[1]/h2$THETA[(B+1)]-h2$THETA[2]/h2$THETA[(B+1)]*x,col='blue',add=T)
+  plot(trainpc, pch=(YY[set]+2),col=as.factor(YY[set]+2), logKDEylim=c(min(trainpc[,2]),max(trainpc[,2])), xlim=c(min(trainpc[,1]),max(trainpc[,1])), xlab="X1",ylab="X2")
+  curve(-sq2$THETA[1]/sq2$THETA[(B+1)]-sq2$THETA[2]/sq2$THETA[(B+1)]*x, col='orange',add=T)
+  curve(-h2$THETA[1]/h2$THETA[(B+1)]-h2$THETA[2]/h2$THETA[(B+1)]*x,col='pink',add=T)
   curve(-l2$THETA[1]/l2$THETA[(B+1)]-l2$THETA[2]/l2$THETA[(B+1)]*x,col='green',add=T)
 }
 
