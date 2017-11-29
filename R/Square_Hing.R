@@ -84,7 +84,7 @@ Hinge<-function(YMAT,DIM=2, EPSILON = 10^-5, returnAll = F, verbose=F){
       omega <- c(omega,sqrt((1-sum(YMAT[ii,]*THETA))^2+EPSILON))
       # Make inverse OMEGA matrix
       OMEGA_INV <- diag(1/omega)
-      # Make IBAR_p
+      # Make IBAR_p 
       IBAR <- diag(c(0,rep(1,DIM)))
       # Make identity matrix
       EYE <- diag(ii)

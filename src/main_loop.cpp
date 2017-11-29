@@ -37,12 +37,17 @@ Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001,
     int NN = YMAT.n_rows;
     double LAMBDA = 1.0/NN;
     arma::vec THETA =  arma::zeros(DIM+1,1);
+    
     arma::vec THETA_OLD = THETA;
     arma::mat THETA_list;
     
     // Make I_BAR_p
     arma::mat IBAR (DIM+1,DIM+1,arma::fill::eye);
     IBAR(0,0) = 0.0;
+    
+    arma::mat THSQ(DIM+1,DIM+1,arma::fill::zeros);
+    arma::mat THSQ2(DIM+1,DIM+1,arma::fill::zeros); 
+    
     
 
     if(returnAll){
@@ -66,10 +71,10 @@ Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001,
       THETA_OLD = THETA;
       
       // Turn psi into a column matrix
-      arma::vec psi_mat = psi.rows(0, ii);
+      //arma::vec psi_mat = psi.rows(0, ii);
           
-      arma::mat THSQ =  YMAT.rows(0,ii).t() * YMAT.rows(0,ii);
-      arma::mat THSQ2 = YMAT.rows(0,ii).t() * ((YMAT.rows(0,ii)*THETA_OLD)+0.5*psi_mat);
+      THSQ =  YMAT.rows(0,ii).t() * YMAT.rows(0,ii);
+      THSQ2 = YMAT.rows(0,ii).t() * ((YMAT.rows(0,ii)*THETA_OLD)+0.5*psi.rows(0, ii));
       
       // Update Theta
       THETA = arma::pinv(THSQ+LAMBDA*NN*IBAR)*THSQ2;
@@ -126,13 +131,14 @@ Rcpp::List HingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool 
     omega(ii) =  omegaFun(THETA,  YMAT.row(ii), EPSILON);
       
     //Make inverse OMEGA matrix
-    arma::vec omega_mat = omega.rows(0, ii);
-    arma::mat OMEGA_INV =  arma::diagmat(1.0/omega_mat);
-    arma::vec ONES(ii+1, arma::fill::ones);
+    //arma::vec omega_mat = omega.rows(0, ii);
+    //arma::mat OMEGA_INV =  arma::diagmat(1.0/omega.rows(0, ii));
+    //arma::vec ONES(ii+1, arma::fill::ones);
 
     //Compute theta update
-    THETA = arma::pinv(YMAT.rows(0,ii).t()*OMEGA_INV*YMAT.rows(0,ii)+4*NN*IBAR*LAMBDA)*(YMAT.rows(0,ii).t()*(OMEGA_INV)*(ONES+omega_mat));
-    
+    //THETA = arma::pinv(YMAT.rows(0,ii).t()*OMEGA_INV*YMAT.rows(0,ii)+4*NN*IBAR*LAMBDA)*(YMAT.rows(0,ii).t()*(OMEGA_INV)*(1.0+omega.rows(0, ii));
+    THETA = arma::pinv((YMAT.rows(0,ii).each_col()%(1.0/omega.rows(0, ii))).t()*YMAT.rows(0,ii)+4*NN*IBAR*LAMBDA)*((YMAT.rows(0,ii).each_col()%(1.0/omega.rows(0, ii))).t()*(1.0+omega.rows(0, ii)));
+                                                                                                                                                                                
     
     if(returnAll){
       THETA_list.row(ii)=THETA.t();
@@ -180,6 +186,8 @@ Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, boo
   //Main loop
   for(int ii = 1; ii<NN; ii++) {
     
+    //Rcpp::Rcout << "Doing "<< ii << " of  " << NN << std::endl;
+    
     //Update chi vector
     chi(ii) = chiFun(THETA,  YMAT.row(ii), EPSILON); 
       
@@ -187,9 +195,9 @@ Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, boo
     THETA_OLD = THETA ;
     
     //Turn chi vector into column vector
-    arma::vec chi_mat = chi.rows(0, ii);
+    //arma::vec chi_mat = chi.rows(0, ii);
     //Compute Theta
-    THETA = arma::pinv(YMAT.rows(0,ii).t()*YMAT.rows(0,ii)+8*LAMBDA*NN*IBAR)*YMAT.rows(0,ii).t()*(YMAT.rows(0,ii)*THETA_OLD+4*chi_mat);
+    THETA = arma::pinv(YMAT.rows(0,ii).t()*YMAT.rows(0,ii)+8*LAMBDA*NN*IBAR)*YMAT.rows(0,ii).t()*(YMAT.rows(0,ii)*THETA_OLD+4*chi.rows(0, ii));
 
     if(returnAll){
       THETA_list.row(ii)=THETA.t();
