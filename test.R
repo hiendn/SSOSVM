@@ -3,20 +3,20 @@ library(caret)
 library(animation)
 ###########################################
 
-YMAT <- generateSim(5*10^3)
+YMAT <- generateSim(10^4)
 
 ptm <- proc.time()
 
-#sq1<-SquareHinge(YMAT$YMAT,returnAll =T)
+sq1<-SquareHinge(YMAT$YMAT,returnAll =T)
 h1<-Hinge(YMAT$YMAT,returnAll =T)
-#l1<-Logistic(YMAT$YMAT,returnAll =T)
+l1<-Logistic(YMAT$YMAT,returnAll =T)
 
 x1<-proc.time() - ptm
 
 ptm <- proc.time()
-#sq2<-SquareHingeC(YMAT$YMAT,returnAll =T)
+sq2<-SquareHingeC(YMAT$YMAT,returnAll =T)
 h2<-HingeC(YMAT$YMAT,returnAll =T)
-#l2<-LogisticC(YMAT$YMAT,returnAll =T)
+l2<-LogisticC(YMAT$YMAT,returnAll =T)
 x2<-proc.time() - ptm
 x2
 
@@ -40,6 +40,26 @@ saveGIF({
     ani.pause()   ## pause for a while ('interval')
   }
 }, interval = 0.1, movie.name = 'cool.gif', ani.width = 300, ani.height = 300)
+
+
+saveGIF({
+  block_size = floor(sq2$NN/100);
+  ani.options( nmax = floor(sq2$NN/block_size))
+  ## use a loop to create images one by one
+  for (i in 1:ani.options('nmax')) {
+    
+    j=i*block_size;
+    
+    plot(YMAT$XX[1:j,], pch=(YMAT$YY+2)[1:j],col=heat.colors(sq2$NN)[1:j], ylim=c(min(YMAT$XX[,2]),max(YMAT$XX[,2])), xlim=c(min(YMAT$XX[,1]),max(YMAT$XX[,1])), xlab="X1",ylab="X2" )
+    
+    curve(-sq1$THETA_list[j,1]/sq1$THETA_list[j,3]-sq1$THETA_list[j,2]/sq1$THETA_list[j,3]*x,from=min(YMAT$XX),to=max(YMAT$XX),col='black',add=T)
+    curve(-h1$THETA_list[j,1]/h1$THETA_list[j,3]-h1$THETA_list[j,2]/h1$THETA_list[j,3]*x,from=min(YMAT$XX),to=max(YMAT$XX),col='blue',add=T)
+    curve(-l1$THETA_list[j,1]/l1$THETA_list[j,3]-l1$THETA_list[j,2]/l1$THETA_list[j,3]*x,from=min(YMAT$XX),to=max(YMAT$XX),col='green',add=T)
+    
+    ani.pause()   ## pause for a while ('interval')
+  }
+}, interval = 0.1, movie.name = 'bad.gif', ani.width = 300, ani.height = 300)
+
 
 ############################################
 # # download data from http://yann.lecun.com/exdb/mnist/
@@ -69,31 +89,28 @@ k=1
 YY<-2.0*((trainlab==k)-.5)
 YY2<-2.0*((testlab==k)-.5)
 
+
+
 pca1<-princomp(train)
-
-
-
-
-
-
-
 B=2
-M=60000
-
 test1<-predict(pca1, newdata = test)[,1:B]
-
-
-set<-sample(M)
-#set<-sample(c(which(trainlab==1), sample(which(trainlab!=1), length(which(trainlab==1)))))
-
+#set<-sample(c(which(trainlab==1), sample(which(trainlab!=1), length(which(trainlab==1)))
 trainpc<-pca1$scores[set,1:B]
 YMAT <- cbind(YY[set],as.matrix(trainpc))
 
 
 
-l2<-LogisticC(YMAT, DIM = B, returnAll = T)
-sq2<-SquareHingeC(YMAT, DIM = B, returnAll =T)
+M=20
+set<-sample(60000,M)
+B=784
+YMAT <- cbind(YY[set],as.matrix(train[set,]))
+
+ptm <- proc.time()
 h2<-HingeC(YMAT, DIM = B, returnAll =F)
+x2<-proc.time() - ptm
+x2
+
+
 
 xl<- sign(rowSums(t(apply(test1, 1 , `*` , l2$THETA[-(1)] )))+l2$THETA[(1)]) 
 xsq<- sign(rowSums(t(apply(test1, 1 , `*` , sq2$THETA[-(1)] )))+sq2$THETA[(1)]) 

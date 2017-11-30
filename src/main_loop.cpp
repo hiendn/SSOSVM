@@ -32,7 +32,7 @@ double omegaFun(arma::vec THETA,  arma::rowvec Yrow, double EPSILON ){
 
 //'@export
 // [[Rcpp::export]]
-Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool returnAll = false) {
+Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool returnAll = false, bool SLOW = false) {
 
     int NN = YMAT.n_rows;
     double LAMBDA = 1.0/NN;
@@ -46,9 +46,10 @@ Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001,
     IBAR(0,0) = 0.0;
     
     arma::mat THSQ(DIM+1,DIM+1,arma::fill::zeros);
-    arma::mat THSQ2(DIM+1,DIM+1,arma::fill::zeros); 
-    arma::mat THSQ2a(DIM+1,DIM+1,arma::fill::zeros); 
-    arma::mat THSQ2b(DIM+1,DIM+1,arma::fill::zeros); 
+    arma::mat THSQ2(DIM+1,1,arma::fill::zeros); 
+    
+    arma::mat THSQ2a(DIM+1,1,arma::fill::zeros); 
+    arma::mat THSQ2b(DIM+1,1,arma::fill::zeros); 
 
     if(returnAll){
       THETA_list = arma::zeros(NN, DIM+1);
@@ -64,7 +65,7 @@ Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001,
     
     THSQ=  YMAT.row(0).t()*YMAT.row(0)+LAMBDA*NN*IBAR;
     THSQ2b = YMAT.row(0).t()*(0.5*psi(0));
-    THSQ2a = YMAT.row(0).t()*(YMAT.row(0)*THETA_OLD);
+    //THSQ2a = YMAT.row(0).t()*(YMAT.row(0)*THETA_OLD);
     
       //Main loop
     for(int ii = 1; ii<NN; ii++) {
@@ -80,7 +81,9 @@ Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001,
           
       THSQ += YMAT.row(ii).t()*YMAT.row(ii);
 
-      THSQ2a = YMAT.rows(0,ii).t()*(YMAT.rows(0,ii)*THETA_OLD);
+      if(SLOW){
+        THSQ2a = YMAT.rows(0,ii).t()*(YMAT.rows(0,ii)*THETA_OLD);
+      }
       
       THSQ2b += YMAT.row(ii).t()*(0.5*psi(ii));
       
@@ -113,7 +116,7 @@ Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001,
 
 //'@export
 // [[Rcpp::export]]
-Rcpp::List HingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool returnAll = false) {
+Rcpp::List HingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool returnAll = false, bool SLOW = false) {
   
   int NN = YMAT.n_rows;
   double LAMBDA = 1.0/NN;
@@ -180,7 +183,7 @@ Rcpp::List HingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool 
 
 //'@export
 // [[Rcpp::export]]
-Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, bool returnAll = false) {
+Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, bool returnAll = false, bool SLOW = false) {
   
   int NN = YMAT.n_rows;
   double LAMBDA = 1.0/NN;
@@ -200,6 +203,9 @@ Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, boo
   
   
   arma::mat store (DIM+1,DIM+1,arma::fill::zeros);
+  arma::mat Part2(DIM+1,1,arma::fill::zeros);
+  arma::mat Part2a(DIM+1,1,arma::fill::zeros);
+  arma::mat Part2b(DIM+1,1,arma::fill::zeros);
   
   //Initialize omega vector
   double chi_temp = chiFun(THETA,  YMAT.row(1), EPSILON); 
@@ -209,6 +215,7 @@ Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, boo
   
   
   store = YMAT.row(0).t()*YMAT.row(0)+8*LAMBDA*NN*IBAR;
+  Part2b = YMAT.row(0).t()*(4*chi(0));
   
   //Main loop
   for(int ii = 1; ii<NN; ii++) {
@@ -224,8 +231,16 @@ Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, boo
     //Turn chi vector into column vector
     //arma::vec chi_mat = chi.rows(0, ii);
     store += YMAT.row(ii).t()*YMAT.row(ii);
+    
+    if(SLOW){
+      Part2a = YMAT.rows(0,ii).t()*(YMAT.rows(0,ii)*THETA_OLD);
+    }
+    Part2b += YMAT.row(ii).t()*(4*chi(ii));
+   
+    Part2 = Part2a+Part2b;
+
     //Compute Theta
-    THETA = arma::pinv(store)*YMAT.rows(0,ii).t()*(YMAT.rows(0,ii)*THETA_OLD+4*chi.rows(0, ii));
+    THETA = arma::pinv(store)*Part2;
 
     if(returnAll){
       THETA_list.row(ii)=THETA.t();

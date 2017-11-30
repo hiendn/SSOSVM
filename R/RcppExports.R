@@ -6,17 +6,17 @@
 NULL
 
 #'@export
-SquareHingeC <- function(YMAT, DIM = 2L, EPSILON = 0.00001, returnAll = FALSE) {
-    .Call('_SSOSVM_SquareHingeC', PACKAGE = 'SSOSVM', YMAT, DIM, EPSILON, returnAll)
+SquareHingeC <- function(YMAT, DIM = 2L, EPSILON = 0.00001, returnAll = FALSE, SLOW = FALSE) {
+    .Call('_SSOSVM_SquareHingeC', PACKAGE = 'SSOSVM', YMAT, DIM, EPSILON, returnAll, SLOW)
 }
 
 #'@export
-HingeC <- function(YMAT, DIM = 2L, EPSILON = 0.00001, returnAll = FALSE) {
-    .Call('_SSOSVM_HingeC', PACKAGE = 'SSOSVM', YMAT, DIM, EPSILON, returnAll)
+HingeC <- function(YMAT, DIM = 2L, EPSILON = 0.00001, returnAll = FALSE, SLOW = FALSE) {
+    .Call('_SSOSVM_HingeC', PACKAGE = 'SSOSVM', YMAT, DIM, EPSILON, returnAll, SLOW)
 }
 
 #'@export
-LogisticC <- function(YMAT, DIM = 2L, EPSILON = 0.00001, returnAll = FALSE) {
-    .Call('_SSOSVM_LogisticC', PACKAGE = 'SSOSVM', YMAT, DIM, EPSILON, returnAll)
+LogisticC <- function(YMAT, DIM = 2L, EPSILON = 0.00001, returnAll = FALSE, SLOW = FALSE) {
+    .Call('_SSOSVM_LogisticC', PACKAGE = 'SSOSVM', YMAT, DIM, EPSILON, returnAll, SLOW)
 }
 
