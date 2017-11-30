@@ -3,20 +3,20 @@ library(caret)
 library(animation)
 ###########################################
 
-YMAT <- generateSim(10^3)
+YMAT <- generateSim(5*10^3)
 
 ptm <- proc.time()
 
-sq1<-SquareHinge(YMAT$YMAT,returnAll =T)
+#sq1<-SquareHinge(YMAT$YMAT,returnAll =T)
 h1<-Hinge(YMAT$YMAT,returnAll =T)
-l1<-Logistic(YMAT$YMAT,returnAll =T)
+#l1<-Logistic(YMAT$YMAT,returnAll =T)
 
 x1<-proc.time() - ptm
 
 ptm <- proc.time()
-sq2<-SquareHingeC(YMAT$YMAT,returnAll =T)
+#sq2<-SquareHingeC(YMAT$YMAT,returnAll =T)
 h2<-HingeC(YMAT$YMAT,returnAll =T)
-l2<-LogisticC(YMAT$YMAT,returnAll =T)
+#l2<-LogisticC(YMAT$YMAT,returnAll =T)
 x2<-proc.time() - ptm
 x2
 
@@ -83,7 +83,7 @@ M=60000
 test1<-predict(pca1, newdata = test)[,1:B]
 
 
-set<-1:M
+set<-sample(M)
 #set<-sample(c(which(trainlab==1), sample(which(trainlab!=1), length(which(trainlab==1)))))
 
 trainpc<-pca1$scores[set,1:B]
@@ -101,9 +101,9 @@ xh<- sign(rowSums(t(apply(test1, 1 , `*` , h2$THETA[-(1)] ))) +h2$THETA[(1)])
 
 if(B==2){
   plot(trainpc, pch=(YY[set]+2),col=as.factor(YY[set]+2), ylim=c(min(trainpc[,2]),max(trainpc[,2])), xlim=c(min(trainpc[,1]),max(trainpc[,1])), xlab="X1",ylab="X2")
-  curve(-sq2$THETA[1]/sq2$THETA[3]-sq2$THETA[2]/sq2$THETA[3]*x, col='orange',add=T)
-  curve(-h2$THETA[1]/h2$THETA[3]-h2$THETA[2]/h2$THETA[3]*x,col='pink',add=T)
-  curve(-l2$THETA[1]/l2$THETA[3]-l2$THETA[2]/l2$THETA[3]*x,col='green',add=T)
+  curve(-sq2$THETA[1]/sum(sq2$THETA[-c(1,2)])-sq2$THETA[2]/sum(sq2$THETA[-c(1,2)])*x, col='orange',add=T)
+  curve(-h2$THETA[1]/sum(h2$THETA[-c(1,2)])-h2$THETA[2]/sum(h2$THETA[-c(1,2)])*x,col='pink',add=T)
+  curve(-l2$THETA[1]/sum(l2$THETA[-c(1,2)])-l2$THETA[2]/sum(l2$THETA[-c(1,2)])*x,col='green',add=T)
 }
 
 pred<-xl
