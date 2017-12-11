@@ -32,7 +32,7 @@ double omegaFun(arma::vec THETA,  arma::rowvec Yrow, double EPSILON ){
 
 //'@export
 // [[Rcpp::export]]
-Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool returnAll = false) {
+Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool returnAll = false, double rho=1.0) {
 
     int NN = YMAT.n_rows;
     double LAMBDA;
@@ -65,11 +65,10 @@ Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001,
 
     
     store =  YMAT.row(0).t()*YMAT.row(0);
-    Part2b = YMAT.row(0).t()*(0.5*psi(0));
+    Part2b = YMAT.row(0).t()*((0.5/rho)*psi(0));
     
       //Main loop
     for(int ii = 1; ii<NN; ii++) {
-      
       //Update little psi vector
       psi(ii) =  psiFun(THETA,  YMAT.row(ii), EPSILON);
       
@@ -81,9 +80,9 @@ Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001,
           
       store += YMAT.row(ii).t()*YMAT.row(ii);
       
-      Part2a  = arma::pinv(store+LAMBDA*NN*IBAR);
+      Part2a  = arma::pinv(store+(LAMBDA*NN*IBAR/rho));
       
-      Part2b += YMAT.row(ii).t()*(0.5*psi(ii));
+      Part2b += YMAT.row(ii).t()*((0.5/rho)*psi(ii));
       
       //THSQ2 = THSQ2a+THSQ2b;
       
@@ -114,7 +113,7 @@ Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001,
 
 //'@export
 // [[Rcpp::export]]
-Rcpp::List HingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool returnAll = false) {
+Rcpp::List HingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool returnAll = false, double rho=1.0) {
   
   int NN = YMAT.n_rows;
   double LAMBDA = 1.0/NN;
@@ -180,7 +179,7 @@ Rcpp::List HingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool 
 
 //'@export
 // [[Rcpp::export]]
-Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, bool returnAll = false) {
+Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, bool returnAll = false, double rho=1.0) {
   
   int NN = YMAT.n_rows;
   double LAMBDA;
@@ -214,7 +213,7 @@ Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, boo
     
   
   store = YMAT.row(0).t()*YMAT.row(0); // Only compute the inner product here
-  Part2b = YMAT.row(0).t()*(4*chi(0));
+  Part2b = YMAT.row(0).t()*((4/rho)*chi(0));
   
   //Main loop
   for(int ii = 1; ii<NN; ii++) {
@@ -231,9 +230,9 @@ Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, boo
     //arma::vec chi_mat = chi.rows(0, ii);
     store += YMAT.row(ii).t()*YMAT.row(ii);
     
-    Part2a = arma::pinv(store+8*LAMBDA*NN*IBAR);
+    Part2a = arma::pinv(store+(8*LAMBDA*NN*IBAR/rho));
     
-    Part2b += YMAT.row(ii).t()*(4*chi(ii));
+    Part2b += YMAT.row(ii).t()*((4/rho)*chi(ii));
     
     //Compute Theta
     THETA = Part2a*store*THETA_OLD+Part2a*Part2b;
