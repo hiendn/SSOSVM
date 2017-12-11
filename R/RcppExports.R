@@ -6,8 +6,8 @@
 NULL
 
 #'@export
-SquareHingeC <- function(YMAT, DIM = 2L, EPSILON = 0.00001, returnAll = FALSE, SLOW = TRUE) {
-    .Call('_SSOSVM_SquareHingeC', PACKAGE = 'SSOSVM', YMAT, DIM, EPSILON, returnAll, SLOW)
+SquareHingeC <- function(YMAT, DIM = 2L, EPSILON = 0.00001, returnAll = FALSE) {
+    .Call('_SSOSVM_SquareHingeC', PACKAGE = 'SSOSVM', YMAT, DIM, EPSILON, returnAll)
 }
 
 #'@export
@@ -16,7 +16,7 @@ HingeC <- function(YMAT, DIM = 2L, EPSILON = 0.00001, returnAll = FALSE) {
 }
 
 #'@export
-LogisticC <- function(YMAT, DIM = 2L, EPSILON = 0.00001, returnAll = FALSE, SLOW = TRUE) {
-    .Call('_SSOSVM_LogisticC', PACKAGE = 'SSOSVM', YMAT, DIM, EPSILON, returnAll, SLOW)
+LogisticC <- function(YMAT, DIM = 2L, EPSILON = 0.00001, returnAll = FALSE) {
+    .Call('_SSOSVM_LogisticC', PACKAGE = 'SSOSVM', YMAT, DIM, EPSILON, returnAll)
 }
 
