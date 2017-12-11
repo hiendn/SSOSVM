@@ -32,7 +32,7 @@ double omegaFun(arma::vec THETA,  arma::rowvec Yrow, double EPSILON ){
 
 //'@export
 // [[Rcpp::export]]
-Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool returnAll = false, bool SLOW = false) {
+Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool returnAll = false, bool SLOW = true) {
 
     int NN = YMAT.n_rows;
     double LAMBDA = 1.0/NN;
@@ -116,7 +116,7 @@ Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001,
 
 //'@export
 // [[Rcpp::export]]
-Rcpp::List HingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool returnAll = false, bool SLOW = false) {
+Rcpp::List HingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool returnAll = false, bool SLOW = true) {
   
   int NN = YMAT.n_rows;
   double LAMBDA = 1.0/NN;
@@ -183,7 +183,7 @@ Rcpp::List HingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool 
 
 //'@export
 // [[Rcpp::export]]
-Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, bool returnAll = false, bool SLOW = false) {
+Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, bool returnAll = false, bool SLOW = true) {
   
   int NN = YMAT.n_rows;
   double LAMBDA = 1.0/NN;
