@@ -22,8 +22,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // HingeC
-Rcpp::List HingeC(arma::mat& YMAT, int DIM, double EPSILON, bool returnAll, bool SLOW);
-RcppExport SEXP _SSOSVM_HingeC(SEXP YMATSEXP, SEXP DIMSEXP, SEXP EPSILONSEXP, SEXP returnAllSEXP, SEXP SLOWSEXP) {
+Rcpp::List HingeC(arma::mat& YMAT, int DIM, double EPSILON, bool returnAll);
+RcppExport SEXP _SSOSVM_HingeC(SEXP YMATSEXP, SEXP DIMSEXP, SEXP EPSILONSEXP, SEXP returnAllSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -31,8 +31,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type DIM(DIMSEXP);
     Rcpp::traits::input_parameter< double >::type EPSILON(EPSILONSEXP);
     Rcpp::traits::input_parameter< bool >::type returnAll(returnAllSEXP);
-    Rcpp::traits::input_parameter< bool >::type SLOW(SLOWSEXP);
-    rcpp_result_gen = Rcpp::wrap(HingeC(YMAT, DIM, EPSILON, returnAll, SLOW));
+    rcpp_result_gen = Rcpp::wrap(HingeC(YMAT, DIM, EPSILON, returnAll));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -54,7 +53,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_SSOSVM_SquareHingeC", (DL_FUNC) &_SSOSVM_SquareHingeC, 5},
-    {"_SSOSVM_HingeC", (DL_FUNC) &_SSOSVM_HingeC, 5},
+    {"_SSOSVM_HingeC", (DL_FUNC) &_SSOSVM_HingeC, 4},
     {"_SSOSVM_LogisticC", (DL_FUNC) &_SSOSVM_LogisticC, 5},
     {NULL, NULL, 0}
 };
