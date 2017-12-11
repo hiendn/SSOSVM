@@ -145,6 +145,7 @@ Logistic<-function(YMAT,DIM=2, EPSILON = 10^-5, returnAll = F, verbose=F){
     THETA <- MASS::ginv(t(YMAT[1:ii,])%*%YMAT[1:ii,]+8*LAMBDA*NN*IBAR)%*%
       t(YMAT[1:ii,])%*%(YMAT[1:ii,]%*%THETA_OLD+4*chi_mat)
     
+   
     
     if(verbose){
       message(paste(ii,THETA))
