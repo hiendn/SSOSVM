@@ -50,8 +50,11 @@ Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001,
     arma::mat THSQ2(DIM+1,1,arma::fill::zeros); 
     
     arma::mat Part2a(DIM+1,1,arma::fill::zeros); 
-    arma::mat Part2b(DIM+1,1,arma::fill::zeros); 
+    arma::mat Part2b(DIM+1,1,arma::fill::zeros);
+    arma::mat Part2c(DIM+1,1,arma::fill::zeros); 
 
+    arma::mat Inter(DIM+1,DIM+1,arma::fill::zeros);
+    
     if(returnAll){
       THETA_list = arma::zeros(NN, DIM+1);
     }else{
@@ -66,29 +69,33 @@ Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001,
     
     store =  YMAT.row(0).t()*YMAT.row(0);
     Part2b = YMAT.row(0).t()*((0.5/rho)*psi(0));
+    Part2c = store*THETA;
     
       //Main loop
     for(int ii = 1; ii<NN; ii++) {
       //Update little psi vector
       psi(ii) =  psiFun(THETA,  YMAT.row(ii), EPSILON);
       
-      // Put old value of theta in a vector
-      THETA_OLD = THETA;
-      
       // Turn psi into a column matrix
       //arma::vec psi_mat = psi.rows(0, ii);
+      
+      Inter = YMAT.row(ii).t()*YMAT.row(ii);
           
-      store += YMAT.row(ii).t()*YMAT.row(ii);
+      store += Inter;
       
       Part2a  = arma::pinv(store+(LAMBDA*NN*IBAR/rho));
       
       Part2b += YMAT.row(ii).t()*((0.5/rho)*psi(ii));
       
+      Part2c += Inter*THETA_OLD;
+      
       //THSQ2 = THSQ2a+THSQ2b;
       
       // Update Theta
-      THETA = Part2a*store*THETA_OLD+Part2a*Part2b;
-     
+      THETA = Part2a*Part2c+Part2a*Part2b;
+      
+      // Put old value of theta in a vector
+      THETA_OLD = THETA;
     
       if(returnAll){
         THETA_list.row(ii)=THETA.t();
@@ -204,6 +211,9 @@ Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, boo
   arma::mat Part2(DIM+1,1,arma::fill::zeros);
   arma::mat Part2a(DIM+1,1,arma::fill::zeros);
   arma::mat Part2b(DIM+1,1,arma::fill::zeros);
+  arma::mat Part2c(DIM+1,1,arma::fill::zeros); 
+  
+  arma::mat Inter(DIM+1,DIM+1,arma::fill::zeros);
   
   //Initialize omega vector
   double chi_temp = chiFun(THETA,  YMAT.row(1), EPSILON); 
@@ -214,6 +224,7 @@ Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, boo
   
   store = YMAT.row(0).t()*YMAT.row(0); // Only compute the inner product here
   Part2b = YMAT.row(0).t()*((4/rho)*chi(0));
+  Part2c = store*THETA;
   
   //Main loop
   for(int ii = 1; ii<NN; ii++) {
@@ -223,19 +234,24 @@ Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, boo
     //Update chi vector
     chi(ii) = chiFun(THETA,  YMAT.row(ii), EPSILON); 
     
-    // Store old theta away
-    THETA_OLD = THETA ;
-    
     //Turn chi vector into column vector
     //arma::vec chi_mat = chi.rows(0, ii);
-    store += YMAT.row(ii).t()*YMAT.row(ii);
+    
+    Inter = YMAT.row(ii).t()*YMAT.row(ii);
+    
+    store += Inter;
     
     Part2a = arma::pinv(store+(8*LAMBDA*NN*IBAR/rho));
     
     Part2b += YMAT.row(ii).t()*((4/rho)*chi(ii));
     
+    Part2c += Inter*THETA_OLD;
+    
     //Compute Theta
-    THETA = Part2a*store*THETA_OLD+Part2a*Part2b;
+    THETA = Part2a*Part2c+Part2a*Part2b;
+    
+    // Store old theta away
+    THETA_OLD = THETA ;
       
       if(returnAll){
         THETA_list.row(ii)=THETA.t();
