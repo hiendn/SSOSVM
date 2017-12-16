@@ -83,7 +83,7 @@ Rcpp::List SquareHingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001,
           
       store += Inter;
       
-      Part2a  = arma::inv_sympd(store+(LAMBDA*NN*IBAR/rho));
+      Part2a  = arma::inv_sympd(store+(LAMBDA*(ii+1)*IBAR/rho));
       
       Part2b += YMAT.row(ii).t()*((0.5/rho)*psi(ii));
       
@@ -147,7 +147,7 @@ Rcpp::List HingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool 
   
   arma::mat  store(DIM+1,DIM+1,arma::fill::zeros);
   arma::mat  store2(DIM+1,DIM+1,arma::fill::zeros);
-  store = YMAT.row(0).t()*YMAT.row(0)+4*LAMBDA*NN*IBAR;
+  store = YMAT.row(0).t()*YMAT.row(0);
   store2 = (YMAT.row(0)*(1.0/omega(0))).t()*(1.0+omega.row(0)) ;
   
  
@@ -163,7 +163,7 @@ Rcpp::List HingeC(arma::mat& YMAT,  int DIM = 2, double EPSILON = 0.00001, bool 
     store2 += (YMAT.row(ii)*(1.0/omega(ii))).t()*(1.0+omega.row(ii)) ;
     
     //Compute theta update
-    THETA = arma::inv_sympd(store)*(store2);
+    THETA = arma::inv_sympd(store+4*LAMBDA*(ii+1)*IBAR)*(store2);
                                                                                                                                                                                 
     
     if(returnAll){
@@ -241,7 +241,7 @@ Rcpp::List LogisticC(arma::mat& YMAT, int DIM = 2, double EPSILON = 0.00001, boo
     
     store += Inter;
     
-    Part2a = arma::inv_sympd(store+(8*LAMBDA*NN*IBAR/rho));
+    Part2a = arma::inv_sympd(store+(8*LAMBDA*(ii+1)*IBAR/rho));
     
     Part2b += YMAT.row(ii).t()*((4/rho)*chi(ii));
     
